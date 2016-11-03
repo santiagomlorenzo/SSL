@@ -1,10 +1,10 @@
 /*
  ============================================================================
  Name        : removeComments.c
- Author      : 
+ Author      : Santiago M. Lorenzo
  Version     :
  Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Description : Remove Comments in C, Ansi-style
  ============================================================================
  */
 
@@ -13,42 +13,70 @@
 
 int main(void) {
 
-	int c;
+	FILE *f,*fo;
+	f= fopen("someCCode","r");
+	fo= fopen("cOutput","w");
+
+	int c,openChar;
 
 	Inicio: {
-		c= getchar();
+		c= getc(f);
 		if (c=='/'){goto PossibleComment;}
 		else {
-			if (c=='eof'){goto Final;}
+			if (c==EOF){goto Final;}
 			else {
-				putchar(c);
-				goto Inicio;
+				putc(c,fo);
+				if(c=='"'){
+					openChar= c;
+					goto NotComment;
+				}
+					else{
+					goto Inicio;
+					}
 			}
 		}
 	}
 
+	NotComment: {
+
+		c= getc(f);
+				if (c==openChar) {
+					putc(c,fo);
+					goto Inicio;
+				}
+				else {
+					if (c=='/') {goto SingleLineComment;}
+					else {
+						putc('/',fo);
+						putc(c,fo);
+						goto Inicio;
+					}
+				}
+
+	}
+
 
 	PossibleComment: {
-		c= getchar();
+		c= getc(f);
 		if (c=='*') {goto MultiLineComment;}
 		else {
 			if (c=='/') {goto SingleLineComment;}
 			else {
 				putchar('/');
-				putchar(c);
+				putc(c,fo);
 				goto Inicio;
 			}
 		}
 	}
 
 	MultiLineComment: {
-		c= getchar();
+		c= getc(f);
 		if (c=='*') {goto PossibleEnding;}
 		else {goto MultiLineComment;}
 	}
 
 	PossibleEnding: {
-		c= getchar();
+		c= getc(f);
 		if (c=='/'){
 			putchar(' ');
 			goto Inicio;
@@ -56,11 +84,11 @@ int main(void) {
 	}
 
 	SingleLineComment: {
-		c= getchar();
-		if (c!='\n' && c!='eof'){goto SingleLineComment;}
+		c= getc(f);
+		if (c!='\n' && c!=EOF){goto SingleLineComment;}
 		else {
 			putchar(' ');
-			if(c=='eof'){goto Final;}
+			if(c==EOF){goto Final;}
 			else{goto Inicio;}
 		}
 
@@ -71,3 +99,4 @@ int main(void) {
 	}
 
 }
+

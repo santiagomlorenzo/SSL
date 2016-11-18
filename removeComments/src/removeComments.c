@@ -1,10 +1,10 @@
 /*
  ============================================================================
  Name        : removeComments.c
- Author      : Santiago M. Lorenzo
+ Author      : 
  Version     :
  Copyright   : Your copyright notice
- Description : Remove Comments in C, Ansi-style
+ Description : Hello World in C, Ansi-style
  ============================================================================
  */
 
@@ -13,83 +13,70 @@
 
 int main(void) {
 
-	FILE *f,*fo;
-	f= fopen("someCCode","r");
-	fo= fopen("cOutput","w");
-
-	int c,openChar;
+	int c;
+	goto Inicio;
+	int aux;
 
 	Inicio: {
-		c= getc(f);
+		c= getchar();
 		if (c=='/'){goto PossibleComment;}
 		else {
-			if (c==EOF){goto Final;}
-			else {
-				putc(c,fo);
-				if(c=='"'){
-					openChar= c;
-					goto NotComment;
-				}
-					else{
-					goto Inicio;
-					}
+			if(c=='"'||c=='\'')
+			{
+				aux=c;
+				putchar(c);
+				goto CadenaOCaracter;
 			}
+				if (c=='eof'){goto Final;}
+				else {
+					putchar(c);
+					goto Inicio;
+				}
 		}
 	}
 
-	NotComment: {
-
-		c= getc(f);
-				if (c==openChar) {
-					putc(c,fo);
-					goto Inicio;
-				}
-				else {
-					if (c=='/') {goto SingleLineComment;}
-					else {
-						putc('/',fo);
-						putc(c,fo);
-						goto Inicio;
-					}
-				}
+	CadenaOCaracter: {
+		c= getchar();
+		putchar(c);
+		if(c==aux){goto Inicio;}else{goto CadenaOCaracter;}
 
 	}
 
-
 	PossibleComment: {
-		c= getc(f);
+		c= getchar();
 		if (c=='*') {goto MultiLineComment;}
 		else {
 			if (c=='/') {goto SingleLineComment;}
 			else {
 				putchar('/');
-				putc(c,fo);
+				putchar(c);
 				goto Inicio;
 			}
 		}
 	}
 
 	MultiLineComment: {
-		c= getc(f);
+		c= getchar();
 		if (c=='*') {goto PossibleEnding;}
 		else {goto MultiLineComment;}
 	}
 
 	PossibleEnding: {
-		c= getc(f);
+		c= getchar();
 		if (c=='/'){
 			putchar(' ');
 			goto Inicio;
 		}
+		else{goto MultiLineComment;}
 	}
 
 	SingleLineComment: {
-		c= getc(f);
-		if (c!='\n' && c!=EOF){goto SingleLineComment;}
+		c= getchar();
+		if (c!='\n' && c!='eof'){goto SingleLineComment;}
 		else {
 			putchar(' ');
-			if(c==EOF){goto Final;}
-			else{goto Inicio;}
+			if(c=='eof'){goto Final;}
+			else{putchar('\n'); goto Inicio;}
 		}
 
 	}
@@ -99,4 +86,3 @@ int main(void) {
 	}
 
 }
-

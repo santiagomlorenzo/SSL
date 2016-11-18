@@ -131,7 +131,8 @@ int main(void) {
 	}
 
 	Final: {
-		return 1;
+		printf("Funciona!\n");
+		return 0;
 	}
 
 

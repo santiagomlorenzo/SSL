@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define ENDING '#'
+
 int main(void) {
 
 	int c;
@@ -27,7 +29,7 @@ int main(void) {
 				putchar(c);
 				goto CadenaOCaracter;
 			}
-				if (c=='eof'){goto Final;}
+				if (c==ENDING){goto Final;}
 				else {
 					putchar(c);
 					goto Inicio;
@@ -72,10 +74,10 @@ int main(void) {
 
 	SingleLineComment: {
 		c= getchar();
-		if (c!='\n' && c!='eof'){goto SingleLineComment;}
+		if (c!='\n' && c!=ENDING){goto SingleLineComment;}
 		else {
 			putchar(' ');
-			if(c=='eof'){goto Final;}
+			if(c==ENDING){goto Final;}
 			else{putchar('\n'); goto Inicio;}
 		}
 

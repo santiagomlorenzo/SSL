@@ -1,10 +1,10 @@
 /*
  ============================================================================
  Name        : removeComments.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Author      : Group x
+ Version     : 1.1
+ Copyright   : All rights reserved
+ Description : Comments remover for C and derivates
  ============================================================================
  */
 
@@ -20,67 +20,73 @@ int main(void) {
 	int aux;
 
 	Inicio: {
-		c= getchar();
-		if (c=='/'){goto PossibleComment;}
-		else {
-			if(c=='"'||c=='\'')
-			{
-				aux=c;
+		c = getchar();
+		switch(c){
+			case '/': goto PossibleComment;
+			case '"': case '\'':
 				putchar(c);
 				goto CadenaOCaracter;
-			}
-				if (c==ENDING){goto Final;}
-				else {
-					putchar(c);
-					goto Inicio;
-				}
+			
+			case ENDING: goto Final;
+			default: 
+				putchar(c);
+				goto Inicio;			
 		}
 	}
 
 	CadenaOCaracter: {
 		c= getchar();
 		putchar(c);
-		if(c==aux){goto Inicio;}else{goto CadenaOCaracter;}
-
+		switch(c){
+			case '"': case '\'': goto Inicio;
+			default: goto CadenaOCaracter;
+		}
 	}
 
 	PossibleComment: {
 		c= getchar();
-		if (c=='*') {goto MultiLineComment;}
-		else {
-			if (c=='/') {goto SingleLineComment;}
-			else {
+		switch(c){
+			case '*': goto MultiLineComment;
+			case '/': goto SingleLineComment;
+			default:
 				putchar('/');
 				putchar(c);
 				goto Inicio;
-			}
 		}
 	}
 
 	MultiLineComment: {
 		c= getchar();
-		if (c=='*') {goto PossibleEnding;}
-		else {goto MultiLineComment;}
+		switch(c){
+			case '*': goto PossibleEnding;
+			default: goto MultiLineComment;
+		}
 	}
 
 	PossibleEnding: {
 		c= getchar();
-		if (c=='/'){
-			putchar(' ');
-			goto Inicio;
+		switch(c){
+			case '/':
+				putchar(' ');
+				goto Inicio;
+			
+			default: goto MultiLineComment;
 		}
-		else{goto MultiLineComment;}
 	}
 
 	SingleLineComment: {
 		c= getchar();
-		if (c!='\n' && c!=ENDING){goto SingleLineComment;}
-		else {
+		switch(c){
+		case ENDING: 
 			putchar(' ');
-			if(c==ENDING){goto Final;}
-			else{putchar('\n'); goto Inicio;}
+			goto Final;
+		
+		case '\n': 
+			putchar(' ');
+			goto Inicio;
+		
+		default: goto SingleLineComment;		
 		}
-
 	}
 
 	Final: {

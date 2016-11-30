@@ -27,43 +27,63 @@ int oposite(int c);
 int main(void) {
 	int a, octalaux = 1, x, b, aux;
 	Stack_Init();
-	goto Inicio;	
-	
+	goto Inicio;
+
 	Inicio: {
 		a = getchar();
 		switch(a){
-			case '"': case '\'':
+			case '"':
+			    Stack_Push(a);
+				goto EnCadena;
+
+            case '\'':
 				Stack_Push(a);
-				goto BetweenColons;
-			
+				goto EnCaracter;
+
 			case '{': case '[': case '(':
 				Stack_Push(oposite(a));
 				goto EnBloque;
-				
+
 			case '}': case ']': case ')':
 				x = Stack_Pop();
 				if(a==x) goto CierraBloque;
 					else goto Problem;
-		
+
 			case ENDING: goto Final;
 			default: goto Inicio;
 		}
 	}
 
-	BetweenColons: {
+	EnCaracter: {
 		a = getchar();
 		b = Stack_Pop();
-		
+
 		switch(a){
-			case ENDING: goto Problem;		
-			case '\\': 
+			case ENDING: goto Problem;
+			case '\\':
 				if(b == '\'') goto Escape;
-			
+
 			default:
 				if(a == b) goto Inicio;
 					else{
 						Stack_Push(a);
-						goto BetweenColons;
+						goto EnCaracter;
+					}
+		}
+	}
+
+    EnCadena: {
+		a = getchar();
+		b = Stack_Pop();
+
+		switch(a){
+			case ENDING: goto Problem;
+
+			default:
+				if(a == b) goto Inicio;
+					else{
+						Stack_Push(a);
+						goto EnCadena;
 					}
 		}
 	}
@@ -74,19 +94,23 @@ int main(void) {
 		a = getchar();
 		switch(a){
 			case ENDING: goto Problem;
-			case '"': case '\'':
+			case '"':
+                Stack_Push(a);
+				goto EnCadena;
+
+            case '\'':
 				Stack_Push(a);
-				goto BetweenColons;
-			
+				goto EnCaracter;
+
 			case '{': case '[': case '(':
 				Stack_Push(oposite(a));
 				goto EnBloque;
-				
+
 			case '}': case ']': case ')':
 				x = Stack_Pop();
 				if(a==x) goto CierraBloque;
 					else goto Problem;
-			
+
 			default: goto Inicio;
 		}
 	}
@@ -107,10 +131,10 @@ int main(void) {
 		switch(a){
 			case 'n': case 't': case'v': case 'b': case 'r': case 'f': case 'a': case '\\': case '?': case '\'': case '"':
 				goto LastEscapeChar;
-				
+
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 				goto Octal1;
-			
+
 			case 'x': goto Hexa;
 			default: goto Problem;
 		}
@@ -123,10 +147,10 @@ int main(void) {
 			case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
 			case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
 				goto Hexa;
-			
+
 			case '\'': goto Inicio;
 			default: goto Problem;
-			
+
 		}
 	}
 
@@ -135,7 +159,7 @@ int main(void) {
 		switch(a){
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 				goto Octal2;
-				
+
 			case '\'': goto Inicio;
 			default: goto Problem;
 		}
@@ -147,13 +171,13 @@ int main(void) {
 		switch(a){
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 				goto Octal3;
-				
+
 			case '\'': goto Inicio;
 			default: goto Problem;
 		}
 	}
-	
-	
+
+
 	Octal3: {
 		a = getchar();
 		switch(a){
@@ -161,8 +185,8 @@ int main(void) {
 			default: goto Problem;
 		}
 	}
-	
-	
+
+
 	LastEscapeChar: {
 		a = getchar();
 		switch(a){
@@ -175,7 +199,7 @@ int main(void) {
 		printf("Funciona!\n");
 		return 1;
 	}
-	
+
 	Problem: {
 		printf("Su entrada no es reconocida por este parser");
 		return 0;

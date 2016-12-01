@@ -2,7 +2,7 @@
  ============================================================================
  Name        : simpleParser.c
  Author      : Group x
- Version     : 1.1
+ Version     : 1.3
  Copyright   : All rights reserved
  Description : Simple Parser in C
  ============================================================================
@@ -33,11 +33,9 @@ int main(void) {
 		a = getchar();
 		switch(a){
 			case '"':
-			    Stack_Push(a);
-				goto EnCadena;
+			    goto EnCadena;
 
             case '\'':
-				Stack_Push(a);
 				goto EnCaracter;
 
 			case '{': case '[': case '(':
@@ -55,36 +53,23 @@ int main(void) {
 	}
 
 	EnCaracter: {
-		a = getchar();
-		b = Stack_Pop();
-
-		switch(a){
+		b = getchar();
+		switch(b){
 			case ENDING: goto Problem;
+			case '\'': goto Inicio;
 			case '\\':
-				if(b == '\'') goto Escape;
-
-			default:
-				if(a == b) goto Inicio;
-					else{
-						Stack_Push(a);
-						goto EnCaracter;
-					}
+				if(a == '\'') goto Escape;
+			
+			default: goto EnCaracter;
 		}
 	}
 
     EnCadena: {
 		a = getchar();
-		b = Stack_Pop();
-
 		switch(a){
 			case ENDING: goto Problem;
-
-			default:
-				if(a == b) goto Inicio;
-					else{
-						Stack_Push(a);
-						goto EnCadena;
-					}
+			case '"': goto Inicio;
+			default: goto EnCadena;
 		}
 	}
 
@@ -95,11 +80,9 @@ int main(void) {
 		switch(a){
 			case ENDING: goto Problem;
 			case '"':
-                Stack_Push(a);
 				goto EnCadena;
 
             case '\'':
-				Stack_Push(a);
 				goto EnCaracter;
 
 			case '{': case '[': case '(':

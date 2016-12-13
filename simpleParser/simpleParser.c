@@ -56,16 +56,22 @@ int main(void) {
       switch(b){
          case ENDING: goto Problem;
          case '\'': goto Inicio;
-         case '\\':
-            if(a == '\'') goto Escape;
-
-         default: goto EnCaracter;
+         case '\\': goto EscapeCaracter;
+         default: goto EnCaracterSinEscape;
       }
+
+   EnCaracterSinEscape:
+   	   b = getchar();
+   	   switch(b){
+   	   	   case ENDING: goto Problem;
+		   case '\'': goto Inicio;
+		   default: goto EnCaracterSinEscape;
 
     EnCadena:
       a = getchar();
       switch(a){
          case ENDING: goto Problem;
+         case '\\': goto EscapeCadena;
          case '"': goto Inicio;
          default: goto EnCadena;
       }
@@ -100,7 +106,13 @@ int main(void) {
          default: goto EnBloque;
       }
 
-   Escape:
+   EscapeCadena:
+   	   a = getchar();
+       switch(a){
+       	   case'"': putchar('"');goto EnCadena;
+       }
+
+   EscapeCaracter:
       a = getchar();
       switch(a){
          case 'n': case 't': case'v': case 'b': case 'r': case 'f': case 'a': case '\\': case '?': case '\'': case '"':

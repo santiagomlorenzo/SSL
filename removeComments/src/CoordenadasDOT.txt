@@ -1,0 +1,70 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="8,5"
+	node [shape = doublecircle]; Problem Final;
+	node [shape = circle];
+
+	Inicio -> PossibleComment [ label = "/" ];
+	Inicio -> EnCadena [ label = "'ComillasDobles'" ];
+	Inicio -> EnCaracter [ label = "'" ];
+	Inicio -> Final [ label = "ENDING" ];
+	Inicio -> Inicio [ label = "Default" ];
+
+	EnCaracter -> Problem [ label = "ENDING" ];
+	EnCaracter -> Problem [ label = "'" ];
+	EnCaracter -> EscapeCaracter [ label = "'BarraInvertida'" ];
+	EnCaracter -> EnCaracterSinEscape[ label = "Default" ];
+
+	EnCaracterSinEscape -> Problem [ label = "Ending" ];
+	EnCaracterSinEscape -> Inicio [ label = "'" ];
+	EnCaracterSinEscape -> EnCaracterSinEscape [ label = "Default" ];
+
+	EscapeCaracter -> LastEscapeChar[ label = "n, t, v, b, r, f, a, 'BarraInvertida', ?, ', 'ComillasDobles'" ];
+        EscapeCaracter -> Octal1 [ label = "0, 1, 2, 3, 4, 5, 6, 7" ];
+        EscapeCaracter -> PreHexa [ label = "x" ];
+        EscapeCaracter -> Problem [ label = "Default" ];
+
+        LastEscapeChar -> Inicio [ label = "'" ];
+        LastEscapeChar -> Problem [ label = "Default" ];
+
+        PreHexa -> Hexa [ label = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, A, B, C, D, E, F, a, b, c, d, e, f" ];
+        PreHexa -> Problem [ label = "Default" ];
+
+        Hexa -> Hexa [ label = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, A, B, C, D, E, F, a, b, c, d, e, f" ];
+        Hexa -> Inicio [ label = "'" ];
+        Hexa -> Problem [ label = "Default" ];
+
+        Octal1 -> Octal2 [ label = "0, 1, 2, 3, 4, 5, 6, 7" ];
+        Octal1 -> Inicio [ label = "'" ];
+        Octal1 -> Problem [ label = "Default" ];
+
+        Octal2 -> Octal3 [ label = "0, 1, 2, 3, 4, 5, 6, 7" ];
+        Octal2 -> Inicio [ label = "'" ];
+        Octal2 -> Problem [ label = "Default" ];
+
+        Octal3 -> Inicio [ label = "'" ];
+        Octal3 -> Problem [ label = "Default" ];
+
+        EnCadena -> Problem [ label = "ENDING" ];
+        EnCadena -> EscapeCadena [ label = "'BarraInvertida'" ];
+        EnCadena -> Inicio [ label = "'ComillasDobles'" ];
+        EnCadena -> EnCadena [ label = "Default" ];
+
+        EscapeCadena -> Problem [ label = "'ComillasDobles" ];
+        EscapeCadena -> EnCadena [ label = "a, n, t, ?, ', 'BarraInvertida'" ];
+        EscapeCadena -> EnCadena [ label = "Default" ];
+
+        PossibleComment -> MultiLineComment[ label = "*" ];
+        PossibleComment -> SingleLineComment [ label = "/" ];
+        PossibleComment -> Inicio [ label = "Default" ];
+
+        MultiLineComment -> PossibleEnding [ label = "*" ];
+        MultiLineComment -> MultiLineComment [ label = "Default" ];
+
+        PossibleEnding -> Inicio [ label = "/" ];
+        PossibleEnding -> MultiLineComment [ label = "Default" ];
+
+        SingleLineComment -> Final [ label = "ENDING" ];
+        SingleLineComment -> Inicio [ label = "'BarraInvertida'N" ];
+        SingleLineComment -> SingleLineComment [ label = "Default" ];
+}

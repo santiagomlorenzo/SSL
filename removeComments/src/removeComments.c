@@ -15,65 +15,94 @@
 
 int main(void) {
 
-   int c;
+   int a;
    goto Inicio;
 
    Inicio:
-      c = getchar();
-      switch(c){
+      a = getchar();
+      switch(a){
          case '/': goto PossibleComment;
-         case '"': putchar(c); goto EnCadena;
-         case '\'': putchar(c); goto EnCaracter;
+         case '"': 
+		 	putchar(a); 
+			goto EnCadena;
+         case '\'': 
+		 	putchar(a);
+			goto EnCaracter;
          case ENDING: goto Final;
          default:
-            putchar(c);
+            putchar(a);
             goto Inicio;
       }
-
+	
 	EnCaracter:
-		b = getchar();
-		switch(b){
-			case ENDING: goto Problem;
-			case '\'': goto Inicio;
-			case '\\': goto EscapeCaracter;
-			default: goto EnCaracterSinEscape;
-	}
-
-   EnCaracterSinEscape:
-   	   b = getchar();
-   	   switch(b){
-   	   	   case ENDING: goto Problem;
-		   case '\'': goto Inicio;
-		   default: goto EnCaracterSinEscape;
-
-    EnCadena:
       a = getchar();
       switch(a){
          case ENDING: goto Problem;
-         case '\\': goto EscapeCadena;
-         case '"': goto Inicio;
-         default: goto EnCadena;
+         case '\'': goto Problem;
+         case '\\': 
+			putchar(a);
+			goto EscapeCaracter;
+			
+        default: 
+			putchar(a);
+			goto EnCaracterSinEscape;
       }
 
-   EscapeCadena:
+   EnCaracterSinEscape:
    	   a = getchar();
-       switch(a){
-       	   case'"': putchar('"');goto EnCadena;
-       }
-
-   EscapeCaracter:
+   	   switch(a){
+   	   	   case ENDING: goto Problem;
+		   case '\'':
+		   putchar(a);
+		   goto Inicio;
+		   
+		default:
+			putchar(a);
+			goto EnCaracterSinEscape;
+		}
+	
+	EscapeCaracter:
       a = getchar();
       switch(a){
          case 'n': case 't': case'v': case 'b': case 'r': case 'f': case 'a': case '\\': case '?': case '\'': case '"':
-            goto LastEscapeChar;
+			putchar(a);
+			goto LastEscapeChar;
 
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+         	putchar(a);
             goto Octal1;
 
-         case 'x': goto Hexa;
-
-         default: goto Problem;
+         case 'x':
+		 	putchar(a);
+			goto PreHexa;
+         
+		default: goto Problem;
       }
+	
+
+	LastEscapeChar:
+      a = getchar();
+      switch(a){
+         case '\'':
+		 	putchar(a);
+			goto Inicio;
+         
+		default: goto Problem;
+      }
+
+
+   PreHexa:
+   	a = getchar();
+      switch(a){
+         case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case'8': case '9':
+         case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+         case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+            putchar(a);
+			goto Hexa;
+
+         case '\'': goto Problem;
+         default: goto Problem;
+	}
 
    Hexa:
       a = getchar();
@@ -81,21 +110,26 @@ int main(void) {
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case'8': case '9':
          case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
          case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-            goto Hexa;
+            putchar(a);
+			goto Hexa;
 
          case '\'': goto Inicio;
          default: goto Problem;
-
       }
+      
 
    Octal1:
       a = getchar();
       switch(a){
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+         	putchar(a);
             goto Octal2;
 
-         case '\'': goto Inicio;
-         default: goto Problem;
+         case '\'':
+		 	putchar(a);
+		 	goto Inicio;
+        
+		default: goto Problem;
       }
 
 
@@ -103,47 +137,77 @@ int main(void) {
       a = getchar();
       switch(a){
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+         	putchar(a);
             goto Octal3;
 
-         case '\'': goto Inicio;
-         default: goto Problem;
+         case '\'':
+		 	putchar(a);
+			goto Inicio;
+         
+		 default: goto Problem;
       }
 
    Octal3:
       a = getchar();
       switch(a){
-         case '\'': goto Inicio;
-         default: goto Problem;
+         case '\'':
+		 	putchar(a);
+			goto Inicio;
+         
+		 default: goto Problem;
       }
 
-   LastEscapeChar:
+    EnCadena:
       a = getchar();
       switch(a){
-         case '\'': goto Inicio;
-         default: goto Problem;
+         case ENDING: goto Problem;
+         case '\\':
+		 	putchar(a);
+			 goto EscapeCadena;
+         
+		case '"': 
+			putchar(a);
+			goto Inicio;
+         
+		 default: 
+		 	putchar(a);
+			goto EnCadena;
       }
+      
+    EscapeCadena:
+   	   a = getchar();
+       switch(a){
+       	   case '"': goto Problem;
+       	   case '\\': case '\?': case '\'': case '\a': case '\n': case '\t':
+       	   		putchar(a);
+				goto EnCadena;
+					  	
+       	   default:
+			  putchar(a);
+			  goto EnCadena;
+       }
 
    PossibleComment:
-      c= getchar();
-      switch(c){
+      a = getchar();
+      switch(a){
          case '*': goto MultiLineComment;
          case '/': goto SingleLineComment;
          default:
             putchar('/');
-            putchar(c);
+            putchar(a);
             goto Inicio;
       }
 
    MultiLineComment:
-      c= getchar();
-      switch(c){
+      a = getchar();
+      switch(a){
          case '*': goto PossibleEnding;
          default: goto MultiLineComment;
       }
 
    PossibleEnding:
-      c= getchar();
-      switch(c){
+      a = getchar();
+      switch(a){
          case '/':
             putchar(' ');
             goto Inicio;
@@ -152,8 +216,8 @@ int main(void) {
       }
 
    SingleLineComment:
-      c= getchar();
-      switch(c){
+      a = getchar();
+      switch(a){
       case ENDING:
          putchar(' ');
          goto Final;
@@ -164,6 +228,10 @@ int main(void) {
 
       default: goto SingleLineComment;
       }
+
+   Problem:
+      printf("\n \a Error: Su entrada contiene literales o cadenas incorrectas");
+      return 0;
 
    Final:
       return 0;
